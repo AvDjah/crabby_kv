@@ -1,0 +1,90 @@
+SET user:1001 John
+GET user:1001
+SET counter:5 100
+GET config:timeout
+SET user:1002 Alice
+GET user:1002
+SET cache:temp 42
+GET counter:5
+SET config:timeout 30
+GET cache:temp
+SET user:1003 Bob
+GET user:1003
+SET session:abc123 active
+GET session:abc123
+SET product:100 Laptop
+GET product:100
+SET user:1004 Charlie
+GET config:max_connections
+SET config:max_connections 50
+GET user:1004
+SET order:5001 pending
+GET order:5001
+SET user:1005 Diana
+GET product:101
+SET product:101 Mouse
+GET user:1005
+SET cache:session_data temp123
+GET cache:session_data
+SET status:server online
+GET status:server
+SET user:1006 Eve
+GET counter:10
+SET counter:10 250
+GET user:1006
+SET config:debug true
+GET config:debug
+SET user:1007 Frank
+GET user:1007
+SET product:102 Keyboard
+GET product:102
+SET order:5002 shipped
+GET order:5002
+SET user:1008 Grace
+GET cache:user_list
+SET cache:user_list [1001,1002,1003]
+GET user:1008
+SET session:xyz789 expired
+GET session:xyz789
+SET user:1009 Henry
+GET user:1009
+SET config:port 8080
+GET config:port
+SET product:103 Monitor
+GET product:103
+SET user:1010 Ivy
+GET user:1010
+SET counter:15 500
+GET counter:15
+SET order:5003 delivered
+GET order:5003
+SET user:1011 Jack
+GET status:database
+SET status:database connected
+GET user:1011
+SET cache:page_cache homepage
+GET cache:page_cache
+SET user:1012 Kate
+GET user:1012
+SET product:104 Webcam
+GET product:104
+SET config:log_level info
+GET config:log_level
+SET user:1013 Leo
+GET user:1013
+SET session:pqr456 active
+GET session:pqr456
+SET order:5004 cancelled
+GET order:5004
+SET user:1014 Mia
+GET counter:20
+SET counter:20 750
+GET user:1014
+SET product:105 Headphones
+GET product:105
+SET cache:api_response success
+GET cache:api_response
+SET user:1015 Noah
+GET user:1015
+SET config:retry_limit 3
+GET config:retry_limit
