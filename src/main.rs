@@ -1,3 +1,4 @@
+mod config;
 mod handler;
 mod parser;
 mod thread;
@@ -8,14 +9,20 @@ use std::{
     time::Instant,
 };
 
+use config::Config;
+
 fn main() {
     let start_time = Instant::now();
     println!("Starting multi-threaded command processor...\n");
 
+    // Load configuration from environment variables
+    let config = Config::from_env();
+    config.print_config();
+
     // Create thread pool with 4 IO threads
     let num_io_threads = 4;
     let pool_start = Instant::now();
-    let mut pool = thread::ThreadPool::new(num_io_threads);
+    let mut pool = thread::ThreadPool::new(num_io_threads, config);
     let pool_creation_time = pool_start.elapsed();
     println!("[Timing] Thread pool created in {:?}\n", pool_creation_time);
 

@@ -2,6 +2,7 @@ use std::sync::mpsc::{self, Receiver, Sender};
 use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 
+use crate::config::Config;
 use crate::handler::CommandHandler;
 use crate::parser::Command;
 
@@ -18,11 +19,13 @@ pub struct ThreadPool {
     io_threads: Vec<IoThread>,
     main_thread: Option<MainThread>,
     string_sender: Sender<(String, usize)>,
+    #[allow(dead_code)] // Used in debug builds for test hooks
+    config: Arc<Config>,
 }
 
 impl ThreadPool {
     /// Creates a new ThreadPool with specified number of IO threads
-    pub fn new(num_io_threads: usize) -> Self {
+    pub fn new(num_io_threads: usize, config: Arc<Config>) -> Self {
         // Channel for IO threads to send parsed commands to main thread
         let (command_tx, command_rx) = mpsc::channel::<CommandMessage>();
 
@@ -39,6 +42,7 @@ impl ThreadPool {
                 id,
                 command_tx.clone(),
                 Arc::clone(&shared_string_rx),
+                Arc::clone(&config),
             ));
         }
 
@@ -52,6 +56,7 @@ impl ThreadPool {
             io_threads,
             main_thread: Some(main_thread),
             string_sender: string_tx,
+            config,
         }
     }
 
@@ -123,9 +128,10 @@ impl IoThread {
         id: usize,
         command_sender: Sender<CommandMessage>,
         string_receiver: Arc<Mutex<Receiver<(String, usize)>>>,
+        config: Arc<Config>,
     ) -> Self {
         let handle = thread::spawn(move || {
-            Self::run(id, string_receiver, command_sender);
+            Self::run(id, string_receiver, command_sender, config);
         });
 
         Self { id, handle }
@@ -135,6 +141,7 @@ impl IoThread {
         id: usize,
         string_receiver: Arc<Mutex<Receiver<(String, usize)>>>,
         command_sender: Sender<CommandMessage>,
+        _config: Arc<Config>,
     ) {
         println!("[IO Thread {}] Started", id);
 
@@ -144,6 +151,10 @@ impl IoThread {
 
             match result {
                 Ok((raw_string, line_number)) => {
+                    // Inject random delay for testing (only in debug builds)
+                    #[cfg(debug_assertions)]
+                    _config.test.maybe_sleep_io_thread();
+
                     // Skip empty lines
                     if raw_string.trim().is_empty() {
                         continue;
@@ -243,14 +254,16 @@ mod tests {
 
     #[test]
     fn test_thread_pool_creation() {
-        let pool = ThreadPool::new(4);
+        let config = Config::from_env();
+        let pool = ThreadPool::new(4, config);
         assert_eq!(pool.io_threads.len(), 4);
         assert!(pool.main_thread.is_some());
     }
 
     #[test]
     fn test_command_processing() {
-        let mut pool = ThreadPool::new(2);
+        let config = Config::from_env();
+        let mut pool = ThreadPool::new(2, config);
 
         // Start main thread
         let main_handle = pool.start_main_thread();
