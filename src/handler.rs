@@ -61,7 +61,7 @@ mod tests {
 
     #[test]
     fn test_get_nonexistent_key() {
-        let handler = CommandHandler::new();
+        let mut handler = CommandHandler::new();
         let get_cmd: Command = "GET nonexistent".parse().unwrap();
         let result = handler.process_command(get_cmd);
         assert!(result.is_err());
